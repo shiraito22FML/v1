@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, FlatList, TouchableOpacity } from 'react-native';
 
-export default function HomeScreen() {
+export default function feed() {
     const DATA = [
         { id: '1', title: 'Item 1' },
         { id: '2', title: 'Item 2' },

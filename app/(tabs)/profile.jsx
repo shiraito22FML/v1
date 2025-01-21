@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+/*import React, { useState, useEffect } from 'react';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons'; // Make sure to install @expo/vector-icons
+import { Link } from 'expo-router'
+import { useNavigation } from '@react-navigation/native';
 
-const Profile = () => {
+
+const Profile = ({ navigation }) => {
+    const navigation = useNavigation();
+
     const [profile, setProfile] = useState({
         name: 'John Doe',
         username: '@johndoe',
@@ -29,6 +35,7 @@ const Profile = () => {
 
     const handleEditProfile = () => {
         // navigate to edit profile screen
+        navigation.navigate('EditProfile');
     };
 
     const handleEventPress = (event) => {
@@ -45,11 +52,10 @@ const Profile = () => {
                 <View style={styles.profileInfoContainer}>
                     <Text style={styles.profileName}>{profile.name}</Text>
                     <Text style={styles.profileUsername}>{profile.username}</Text>
-
                     <Text style={styles.profileLocation}>{profile.location}</Text>
                 </View>
-                <TouchableOpacity onPress={handleEditProfile}>
-                    <Text style={styles.editButtonText}>Edit Profile</Text>
+                <TouchableOpacity onPress={handleEditProfile} style={styles.cogwheelButton}>
+                    <Ionicons name="settings-outline" size={24} color="#fff" />
                 </TouchableOpacity>
             </View>
             <View>
@@ -62,11 +68,90 @@ const Profile = () => {
                         <View style={styles.eventContainer}>
                             <Text style={styles.eventTitle}>{item.title}</Text>
                             <Text style={styles.eventDate}>{item.date}</Text>
-                            {item.type === 'current' ? (
-                                <Text style={styles.eventType}>Current</Text>
-                            ) : (
-                                <Text style={styles.eventType}>Past</Text>
-                            )}
+                            <Text style={[styles.eventType, item.type === 'current' ? styles.currentEvent : styles.pastEvent]}>
+                                {item.type === 'current' ? 'Current' : 'Past'}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.id}
+                ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+            />
+        </SafeAreaView>
+    );
+};*/
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+
+const Profile = () => {
+    const [profile, setProfile] = useState({
+        name: 'John Doe',
+        username: '@johndoe',
+        bio: 'Software engineer and coffee enthusiast',
+        location: 'New York, USA',
+    });
+
+    const [events, setEvents] = useState([
+        { id: '1', title: 'Event 1', date: '2023-03-01', type: 'current' },
+        { id: '2', title: 'Event 2', date: '2023-02-15', type: 'past' },
+        { id: '3', title: 'Event 3', date: '2023-04-01', type: 'current' },
+        { id: '4', title: 'Event 4', date: '2023-01-01', type: 'past' },
+    ]);
+
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        // Fetch events from API or database
+        const fetchEvents = async () => {
+            const response = await fetch('https://example.com/api/events');
+            const data = await response.json();
+            setEvents(data);
+        };
+        fetchEvents();
+    }, []);
+
+    const handleEditProfile = () => {
+        // Navigate to edit profile screen
+        navigation.navigate('editprofile');
+    };
+
+    const handleEventPress = (event) => {
+        // Navigate to event details screen
+        navigation.navigate('event', { eventId: event.id });
+    };
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <View style={styles.headerContainer}>
+                <Image
+                    source={{ uri: 'https://via.placeholder.com/100' }}
+                    style={styles.profilePicture}
+                />
+                <View style={styles.profileInfoContainer}>
+                    <Text style={styles.profileName}>{profile.name}</Text>
+                    <Text style={styles.profileUsername}>{profile.username}</Text>
+                    <Text style={styles.profileLocation}>{profile.location}</Text>
+                </View>
+                <TouchableOpacity onPress={handleEditProfile} style={styles.cogwheelButton}>
+                    <Ionicons name="settings-outline" size={24} color="#fff" />
+                </TouchableOpacity>
+            </View>
+            <View>
+                <Text style={styles.profileBio}>{profile.bio}</Text>
+            </View>
+            <FlatList
+                data={events}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => handleEventPress(item)}>
+                        <View style={styles.eventContainer}>
+                            <Text style={styles.eventTitle}>{item.title}</Text>
+                            <Text style={styles.eventDate}>{item.date}</Text>
+                            <Text style={[styles.eventType, item.type === 'current' ? styles.currentEvent : styles.pastEvent]}>
+                                {item.type === 'current' ? 'Current' : 'Past'}
+                            </Text>
                         </View>
                     </TouchableOpacity>
                 )}
@@ -76,7 +161,6 @@ const Profile = () => {
         </SafeAreaView>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,

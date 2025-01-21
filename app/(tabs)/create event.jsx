@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-function CreateEventScreen() {
-    const [eventName, setEventName] = React.useState('');
-    const [eventLocation, setEventLocation] = React.useState('');
-    const [eventDescription, setEventDescription] = React.useState('');
-    const [eventImage, setEventImage] = React.useState(null);
-    const [events, setEvents] = React.useState([
+export default function CreateEventScreen() {
+    const navigation = useNavigation();
+    const [eventName, setEventName] = useState('');
+    const [eventLocation, setEventLocation] = useState('');
+    const [eventDescription, setEventDescription] = useState('');
+    const [eventImage, setEventImage] = useState(null);
+
+    const [events, setEvents] = useState([
         { id: '1', title: 'Event 1', date: '2023-03-01', type: 'current' },
         { id: '2', title: 'Event 2', date: '2023-02-15', type: 'past' },
         { id: '3', title: 'Event 3', date: '2023-04-01', type: 'current' },
@@ -15,17 +18,23 @@ function CreateEventScreen() {
 
     const handleCreateEvent = () => {
         // Call API or perform logic to create the event
-        // For demonstration purposes, we'll just console.log the event details
         console.log('Event created:', {
             name: eventName,
             location: eventLocation,
             description: eventDescription,
             image: eventImage,
         });
+
+        // Reset the form after creating the event
+        setEventName('');
+        setEventLocation('');
+        setEventDescription('');
+        setEventImage(null);
     };
 
     const handleEventPress = (item) => {
-        console.log('Event pressed:', item);
+        // Navigate to event details screen
+        navigation.navigate('event', { eventId: item.id });
     };
 
     return (
@@ -46,30 +55,33 @@ function CreateEventScreen() {
                         <TextInput
                             style={styles.inputHalf}
                             placeholder="Event Name"
+                            placeholderTextColor="#999"
                             value={eventName}
-                            onChangeText={(text) => setEventName(text)}
+                            onChangeText={setEventName}
                         />
                         <TextInput
                             style={styles.inputHalf}
                             placeholder="Event Location"
+                            placeholderTextColor="#999"
                             value={eventLocation}
-                            onChangeText={(text) => setEventLocation(text)}
+                            onChangeText={setEventLocation}
                         />
                     </View>
                     <TextInput
                         style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
                         placeholder="Event Description"
+                        placeholderTextColor="#999"
                         value={eventDescription}
-                        onChangeText={(text) => setEventDescription(text)}
+                        onChangeText={setEventDescription}
                         multiline={true}
                     />
                     <TouchableOpacity style={styles.createButton} onPress={handleCreateEvent}>
                         <Text style={styles.createButtonText}>Create Event</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.spacebeteen} />
+                <View style={styles.spaceBetween} />
                 <View style={{ flex: 1 }}>
-                    <View style={styles.EventlistTitle}>
+                    <View style={styles.eventListTitle}>
                         <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>My Events</Text>
                     </View>
                     <FlatList
@@ -79,11 +91,7 @@ function CreateEventScreen() {
                                 <View style={styles.eventContainer}>
                                     <Text style={styles.eventTitle}>{item.title}</Text>
                                     <Text style={styles.eventDate}>{item.date}</Text>
-                                    {item.type === 'current' ? (
-                                        <Text style={styles.eventType}>Current</Text>
-                                    ) : (
-                                        <Text style={styles.eventType}>Past</Text>
-                                    )}
+                                    <Text style={styles.eventType}>{item.type === 'current' ? 'Current' : 'Past'}</Text>
                                 </View>
                             </TouchableOpacity>
                         )}
@@ -212,4 +220,3 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CreateEventScreen;
